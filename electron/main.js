@@ -11,7 +11,6 @@ function createWindow() {
     height: 900
   });
 
-  win.webContents.openDevTools();
 
   win.loadFile(path.join(__dirname, '../dist/index.html'));
 
