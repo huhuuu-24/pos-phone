@@ -11,7 +11,13 @@ function createWindow() {
     height: 900
   });
 
+  win.webContents.openDevTools();
+
   win.loadFile(path.join(__dirname, '../dist/index.html'));
+
+  win.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    console.log('Load failed:', errorCode, errorDescription);
+  });
 }
 
 app.whenReady().then(createWindow);
