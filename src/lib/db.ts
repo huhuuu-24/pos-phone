@@ -73,7 +73,28 @@ export async function updateProduct(product: Product): Promise<void> {
   const db = await openDB();
   const tx = db.transaction('products', 'readwrite');
   await request(tx.objectStore('products').put(product));
+  export async function adjustStock(productId: number, qty: number): Promise<void> {
+  const product = await getProductById(productId);
+
+  if (!product) return;
+
+  product.stockQty = Math.max(
+    0,
+    product.stockQty + qty
+  );
+
+  await updateProduct(product);
+    export async function deleteProduct(id: number): Promise<void> {
+  const db = await openDB();
+
+  const tx = db.transaction('products', 'readwrite');
+
+  await request(
+    tx.objectStore('products').delete(id)
+  );
 }
+}
+
 
 export async function findProductByBarcode(barcode: string): Promise<Product | undefined> {
   const db = await openDB();
