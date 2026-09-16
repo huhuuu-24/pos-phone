@@ -28,6 +28,9 @@ export default function Inventory() {
   const [panel, setPanel] = useState<Panel>('list');
   const [products, setProducts] = useState<ProductWithStock[]>([]);
   const [selected, setSelected] = useState<ProductWithStock | null>(null);
+
+  const [stockQty, setStockQty] = useState('1');
+  
   const [imeis, setImeis] = useState<IMEIRecord[]>([]);
   const [newImei, setNewImei] = useState('');
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
@@ -422,14 +425,19 @@ const handleDeleteProduct = async () => {
                   </div>
                 </div>
                <div className="flex gap-3 mt-6">
-  <button
+
     onClick={() => handleStockChange(1)}
     className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-semibold"
   >
-    + 增加库存
-  </button>
-
-  <button
+     <input
+  type="number"
+  min="1"
+  value={stockQty}
+  onChange={(e) => setStockQty(e.target.value)}
+  placeholder="数量"
+  className="w-24 px-3 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white"
+/>
+    <button
     onClick={() => handleStockChange(-1)}
     className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold"
   >
@@ -448,26 +456,7 @@ const handleDeleteProduct = async () => {
                     : '配件类商品在收银台可直接添加数量，结账后自动扣减库存。'}
                 </p>
                 <div className="flex gap-3 mt-6">
-  <button
-    onClick={() => handleStockChange(1)}
-    className="px-4 py-2 bg-green-500 hover:bg-green-400 rounded-xl text-white font-semibold"
-  >
-    +库存
-  </button>
-
-  <button
-    onClick={() => handleStockChange(-1)}
-    className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 rounded-xl text-white font-semibold"
-  >
-    -库存
-  </button>
-
-  <button
-    onClick={handleDeleteProduct}
-    className="px-4 py-2 bg-red-500 hover:bg-red-400 rounded-xl text-white font-semibold"
-  >
-    删除商品
-  </button>
+  
 </div>
               </div>
             )}
