@@ -424,21 +424,25 @@ const handleDeleteProduct = async () => {
                     <p className="text-white font-mono text-sm mt-1">{selected.barcode || '未设置'}</p>
                   </div>
                 </div>
-               <div className="flex gap-3 mt-6">
+              <div className="flex gap-3 mt-6 items-center">
+  <input
+    type="number"
+    min="1"
+    value={stockQty}
+    onChange={(e) => setStockQty(e.target.value)}
+    placeholder="数量"
+    className="w-24 px-3 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white"
+  />
 
-    onClick={() => handleStockChange(1)}
+  <button
+    onClick={() => handleStockChange(Number(stockQty))}
     className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-semibold"
   >
-     <input
-  type="number"
-  min="1"
-  value={stockQty}
-  onChange={(e) => setStockQty(e.target.value)}
-  placeholder="数量"
-  className="w-24 px-3 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white"
-/>
-    <button
-    onClick={() => handleStockChange(-1)}
+    + 增加库存
+  </button>
+
+  <button
+    onClick={() => handleStockChange(-Number(stockQty))}
     className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold"
   >
     - 减少库存
@@ -450,19 +454,4 @@ const handleDeleteProduct = async () => {
   >
     删除商品
   </button>
-</div> <p className="text-slate-500 text-sm mt-4">
-                  {selected.category === 'service'
-                    ? '服务/维修类商品在收银台可直接添加并设置数量，库存数量仅用于参考。'
-                    : '配件类商品在收银台可直接添加数量，结账后自动扣减库存。'}
-                </p>
-                <div className="flex gap-3 mt-6">
-  
 </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
