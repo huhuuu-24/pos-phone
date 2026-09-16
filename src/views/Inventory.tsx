@@ -147,24 +147,6 @@ const handleDeleteProduct = async () => {
 
   setPanel('list');
 };
-  
-  const handleStockChange = async (qty: number) => {
-  if (!selected) return;
-
-  await adjustStock(selected.id!, qty);
-
-  await loadProducts();
-
-  const updated = await getAllProductsWithStock();
-
-  const product = updated.find(
-    p => p.id === selected.id
-  );
-
-  if (product) {
-    setSelected(product);
-  }
-};
 
   const fieldClass = 'w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all';
   const labelClass = 'block text-slate-400 text-sm font-medium mb-2';
