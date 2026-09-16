@@ -146,6 +146,44 @@ const handleDeleteProduct = async () => {
   await loadProducts();
 
   setPanel('list');
+};const handleStockChange = async (qty: number) => {
+  if (!selected) return;
+
+  await adjustStock(selected.id!, qty);
+
+  await loadProducts();
+
+  const updated = await getAllProductsWithStock();
+
+  const product = updated.find(
+    p => p.id === selected.id
+  );
+
+  if (product) {
+    setSelected(product);
+  }
+};
+
+const handleDeleteProduct = async () => {
+  if (!selected) return;
+
+  if (
+    !confirm(
+      `确定删除 ${selected.brand} ${selected.model} ?`
+    )
+  ) {
+    return;
+  }
+
+  await deleteProduct(selected.id!);
+
+  showToast('商品已删除');
+
+  setSelected(null);
+
+  setPanel('list');
+
+  await loadProducts();
 };
 
   const fieldClass = 'w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all';
@@ -447,6 +485,28 @@ const handleDeleteProduct = async () => {
                     ? '服务/维修类商品在收银台可直接添加并设置数量，库存数量仅用于参考。'
                     : '配件类商品在收银台可直接添加数量，结账后自动扣减库存。'}
                 </p>
+                <div className="flex gap-3 mt-6">
+  <button
+    onClick={() => handleStockChange(1)}
+    className="px-4 py-2 bg-green-500 hover:bg-green-400 rounded-xl text-white font-semibold"
+  >
+    +库存
+  </button>
+
+  <button
+    onClick={() => handleStockChange(-1)}
+    className="px-4 py-2 bg-yellow-500 hover:bg-yellow-400 rounded-xl text-white font-semibold"
+  >
+    -库存
+  </button>
+
+  <button
+    onClick={handleDeleteProduct}
+    className="px-4 py-2 bg-red-500 hover:bg-red-400 rounded-xl text-white font-semibold"
+  >
+    删除商品
+  </button>
+</div>
               </div>
             )}
           </div>
