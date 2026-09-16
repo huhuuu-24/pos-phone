@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, X, ChevronRight, Tag, Hash, Package, AlertCircle, CheckCircle, Smartphone, Headphones, Wrench } from 'lucide-react';
 import {
-  getAllProductsWithStock, addProduct, getIMEIsByProduct, addIMEI
+  getAllProductsWithStock, addProduct, getIMEIsByProduct, addIMEI,adjustStock,
+  deleteProduct
 } from '@/lib/db';
 import { CATEGORY_LABELS } from '@/lib/db';
 import type { ProductWithStock, IMEIRecord, ProductCategory } from '@/types';
@@ -104,6 +105,48 @@ export default function Inventory() {
       showToast('该串号已存在，无法重复添加。', false);
     }
   };
+  const handleStockChange = async (qty: number) => {
+  if (!selected) return;
+
+  await adjustStock(selected.id!, qty);
+
+  await loadProducts();
+
+  const refreshed = (await getAllProductsWithStock())
+    .find(p => p.id === selected.id);
+
+  if (refreshed) {
+    setSelected(refreshed);
+  }
+
+  showToast(
+    qty > 0
+      ? `库存增加 ${qty}`
+      : `库存减少 ${Math.abs(qty)}`
+  );
+};
+
+const handleDeleteProduct = async () => {
+  if (!selected) return;
+
+  if (
+    !window.confirm(
+      `确定删除 ${selected.brand} ${selected.model} ?`
+    )
+  ) {
+    return;
+  }
+
+  await deleteProduct(selected.id!);
+
+  showToast('商品已删除');
+
+  setSelected(null);
+
+  await loadProducts();
+
+  setPanel('list');
+};
 
   const fieldClass = 'w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all';
   const labelClass = 'block text-slate-400 text-sm font-medium mb-2';
@@ -378,7 +421,28 @@ export default function Inventory() {
                     <p className="text-white font-mono text-sm mt-1">{selected.barcode || '未设置'}</p>
                   </div>
                 </div>
-                <p className="text-slate-500 text-sm mt-4">
+               <div className="flex gap-3 mt-6">
+  <button
+    onClick={() => handleStockChange(1)}
+    className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-semibold"
+  >
+    + 增加库存
+  </button>
+
+  <button
+    onClick={() => handleStockChange(-1)}
+    className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold"
+  >
+    - 减少库存
+  </button>
+
+  <button
+    onClick={handleDeleteProduct}
+    className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-xl font-semibold"
+  >
+    删除商品
+  </button>
+</div> <p className="text-slate-500 text-sm mt-4">
                   {selected.category === 'service'
                     ? '服务/维修类商品在收银台可直接添加并设置数量，库存数量仅用于参考。'
                     : '配件类商品在收银台可直接添加数量，结账后自动扣减库存。'}
