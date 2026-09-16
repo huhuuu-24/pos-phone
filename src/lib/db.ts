@@ -69,9 +69,6 @@ export async function getProductById(id: number): Promise<Product | undefined> {
   return request<Product>(tx.objectStore('products').get(id));
 }
 
-
-  );
-
 export async function updateProduct(product: Product): Promise<void> {
   const db = await openDB();
   const tx = db.transaction('products', 'readwrite');
