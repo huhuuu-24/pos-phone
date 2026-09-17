@@ -421,7 +421,11 @@ const handleDeleteProduct = async () => {
                   </div>
                   <div className="bg-slate-800/50 rounded-xl p-4">
                     <p className="text-slate-400 text-xs mb-1">条形码</p>
-                    <p className="text-white font-mono text-sm mt-1">{selected.barcode || '未设置'}</p>
+                    <p className="text-white font-mono text-sm mt-1">
+                      {selected.barcode || '未设置'}
+                    </p>
+                   </div>
+                   </div>
                 
               <div className="flex gap-3 mt-6 items-center">
   <input
