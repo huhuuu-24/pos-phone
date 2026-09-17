@@ -348,7 +348,8 @@ export default function Reports() {
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => alert("补印按钮已触发")}
+                  onClick={() => {alert(document.querySelector('.print-receipt')?.innerHTML || '没找到');
+                }}
                   className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95"
                 >
                   <Printer size={18} />
