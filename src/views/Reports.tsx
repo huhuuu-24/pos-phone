@@ -242,7 +242,7 @@ export default function Reports() {
 
       {/* Reprint Receipt Modal */}
       {reprintOrder && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-6 no-print">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-6">
           <div className="bg-white text-slate-900 rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             {/* Print-only receipt */}
             <div className="print-receipt hidden">
@@ -348,7 +348,7 @@ export default function Reports() {
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => alert("补印按钮已触发")}
                   className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95"
                 >
                   <Printer size={18} />
