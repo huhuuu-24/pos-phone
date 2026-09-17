@@ -734,7 +734,7 @@ export default function POS() {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center p-6 no-print">
           <div className="bg-white text-slate-900 rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
             {/* Print-only receipt */}
-            <div className="print-receipt hidden">
+            <div className="print-receipt">
               {/* Header — shop info */}
               <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '10px', marginBottom: '10px' }}>
                 <div style={{ fontSize: '20px', fontWeight: 'bold', letterSpacing: '1px' }}>DREAM MOBILE ENTERPRISE</div>
