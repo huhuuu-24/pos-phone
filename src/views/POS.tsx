@@ -849,7 +849,47 @@ export default function POS() {
               {/* Action buttons */}
               <div className="flex gap-3">
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => {
+  const receipt = document.querySelector('.print-receipt');
+
+  if (!receipt) {
+    alert('找不到收据内容');
+    return;
+  }
+
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+  if (!printWindow) {
+    alert('无法打开打印窗口');
+    return;
+  }
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            padding: 15px;
+            color: black;
+          }
+        </style>
+      </head>
+      <body>
+        ${receipt.innerHTML}
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  setTimeout(() => {
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  }, 500);
+}}
                   className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-400 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95"
                 >
                   <Printer size={18} />
