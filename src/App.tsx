@@ -3,6 +3,7 @@ import Sidebar from '@/components/Sidebar';
 import POS from '@/views/POS';
 import Inventory from '@/views/Inventory';
 import Reports from '@/views/Reports';
+import Backup from '.@/views/Backup';
 import type { View } from '@/types';
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         {view === 'pos' && <POS />}
         {view === 'inventory' && <Inventory />}
         {view === 'reports' && <Reports />}
+        {view === 'backup' && <Backup />}
       </main>
     </div>
   );
