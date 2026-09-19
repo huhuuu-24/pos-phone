@@ -52,5 +52,5 @@ export interface Order {
   warrantyText?: string;
 }
 
-export type View = 'pos' | 'inventory' | 'reports';
+export type View = 'pos' | 'inventory' | 'reports' | 'backup';
 export type PaymentMethod = 'cash' | 'duitnow' | 'card';
