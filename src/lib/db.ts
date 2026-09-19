@@ -97,12 +97,25 @@ export async function deleteProduct(
   const db = await openDB();
 
   const tx = db.transaction(
-    'products',
+    ['products', 'imeis'],
     'readwrite'
   );
 
+  const productStore = tx.objectStore('products');
+  const imeiStore = tx.objectStore('imeis');
+
+  const imeis = await request(
+    imeiStore.index('productId').getAll(id)
+  );
+
+  for (const imei of imeis) {
+    await request(
+      imeiStore.delete(imei.id)
+    );
+  }
+
   await request(
-    tx.objectStore('products').delete(id)
+    productStore.delete(id)
   );
 }
 
