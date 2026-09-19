@@ -234,7 +234,20 @@ export default function Reports() {
                 order={order}
                 showDate={tab !== 'today'}
                 onReprint={() => setReprintOrder(order)}
-              />
+                onDelete={async () => {
+    if (!order.id) return;
+
+    const ok = confirm(
+      `确定删除订单 #${order.id}？\n\n库存会自动恢复。`
+    );
+
+    if (!ok) return;
+
+    await deleteOrder(order.id);
+
+    loadData();
+  }}
+/>
             ))}
           </div>
         )}
@@ -433,7 +446,7 @@ function StatCard({ icon, label, value, color, sub }: { icon: React.ReactNode; l
   );
 }
 
-function OrderRow({ order, showDate, onReprint }: { order: Order; showDate: boolean; onReprint: () => void }) {
+function OrderRow({ order, showDate, onReprint, onDelete }: { order: Order; showDate: boolean; onReprint: () => void; onDelete: () => void; }) {
   const [expanded, setExpanded] = useState(false);
   const pay = PAY_LABELS[order.paymentMethod];
   const totalQty = order.items.reduce((s, i) => s + i.quantity, 0);
@@ -473,6 +486,13 @@ function OrderRow({ order, showDate, onReprint }: { order: Order; showDate: bool
           <Printer size={14} />
           补印
         </button>
+
+        <button
+  onClick={onDelete}
+  className="flex items-center gap-1.5 px-3 py-2 bg-red-500/15 hover:bg-red-500/25 text-red-400 rounded-lg text-xs font-bold transition-all shrink-0 whitespace-nowrap"
+>
+  🗑 删除
+</button>
       </div>
 
       {expanded && (
