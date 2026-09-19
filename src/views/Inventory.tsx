@@ -419,6 +419,30 @@ const handleDeleteProduct = async () => {
                   <span className="text-slate-400 text-sm">售价：<span className="text-blue-400 font-semibold">RM {selected.sellingPrice.toFixed(2)}</span></span>
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+  <input
+    type="number"
+    value={editCostPrice}
+    onChange={(e) => setEditCostPrice(e.target.value)}
+    placeholder="进货价"
+    className="bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
+  />
+
+  <input
+    type="number"
+    value={editSellingPrice}
+    onChange={(e) => setEditSellingPrice(e.target.value)}
+    placeholder="售价"
+    className="bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
+  />
+</div>
+
+<button
+  onClick={handleSaveProduct}
+  className="mt-4 px-4 py-2 bg-blue-600 rounded-xl text-white"
+>
+  保存修改
+</button>
               <div className={`px-4 py-2 rounded-xl text-lg font-bold ${selected.stock > 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                 库存：{selected.stock}
               </div>
