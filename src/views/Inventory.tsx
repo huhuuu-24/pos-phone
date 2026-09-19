@@ -135,10 +135,10 @@ export default function Inventory() {
       : `库存减少 ${Math.abs(qty)}`
   );
 };
-  const handleSaveProduct = async () => {
+ const handleSaveProduct = async () => {
   if (!selected) return;
-    
-    const updatedProduct = {
+
+  const updatedProduct = {
     id: selected.id,
     category: selected.category,
     brand: selected.brand,
@@ -152,8 +152,8 @@ export default function Inventory() {
     sellingPrice: Number(editSellingPrice),
   };
 
-  await updateProduct({
-   
+  await updateProduct(updatedProduct);
+
   showToast('商品资料已更新');
 
   await loadProducts();
