@@ -199,6 +199,57 @@ export async function getTodayOrders(): Promise<Order[]> {
   return orders.filter((o) => new Date(o.createdAt).toDateString() === today);
 }
 
+// ─── Backup & Restore ─────────────────────────────────────────────
+
+export async function exportDatabase() {
+  const [products, imeis, orders] = await Promise.all([
+    getAllProducts(),
+    getAllIMEIs(),
+    getAllOrders()
+  ]);
+
+  return {
+    version: 1,
+    exportDate: new Date().toISOString(),
+    products,
+    imeis,
+    orders
+  };
+}
+export async function importDatabase(data: any) {
+  const db = await openDB();
+
+  const tx = db.transaction(
+    ['products', 'imeis', 'orders'],
+    'readwrite'
+  );
+
+  const productStore = tx.objectStore('products');
+  const imeiStore = tx.objectStore('imeis');
+  const orderStore = tx.objectStore('orders');
+
+  await request(productStore.clear());
+  await request(imeiStore.clear());
+  await request(orderStore.clear());
+
+  if (data.products) {
+    for (const item of data.products) {
+      await request(productStore.put(item));
+    }
+  }
+
+  if (data.imeis) {
+    for (const item of data.imeis) {
+      await request(imeiStore.put(item));
+    }
+  }
+
+  if (data.orders) {
+    for (const item of data.orders) {
+      await request(orderStore.put(item));
+    }
+  }
+}
 // ─── Category labels ───────────────────────────────────────────────────────
 
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
