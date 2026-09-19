@@ -137,13 +137,23 @@ export default function Inventory() {
 };
   const handleSaveProduct = async () => {
   if (!selected) return;
-
-  await updateProduct({
-    ...selected,
+    
+    const updatedProduct = {
+    id: selected.id,
+    category: selected.category,
+    brand: selected.brand,
+    model: selected.model,
+    color: selected.color,
+    config: selected.config,
+    barcode: selected.barcode,
+    stockQty: selected.stockQty,
+    createdAt: selected.createdAt,
     costPrice: Number(editCostPrice),
     sellingPrice: Number(editSellingPrice),
-  });
+  };
 
+  await updateProduct({
+   
   showToast('商品资料已更新');
 
   await loadProducts();
