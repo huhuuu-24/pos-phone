@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TrendingUp, DollarSign, ShoppingBag, Calendar, CreditCard, Banknote, QrCode, RefreshCw, Filter, Download, Printer, X } from 'lucide-react';
-import { getTodayOrders, getAllOrders, CATEGORY_LABELS } from '@/lib/db';
+import { getTodayOrders, getAllOrders, CATEGORY_LABELS, deleteOrder  } from '@/lib/db';
 import type { Order, PaymentMethod, ProductCategory } from '@/types';
 
 const CATEGORY_BADGE: Record<ProductCategory, string> = {
