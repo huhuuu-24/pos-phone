@@ -3,7 +3,7 @@ import Sidebar from '@/components/Sidebar';
 import POS from '@/views/POS';
 import Inventory from '@/views/Inventory';
 import Reports from '@/views/Reports';
-import Backup from '.@/views/Backup';
+import Backup from '@/views/Backup';
 import type { View } from '@/types';
 
 export default function App() {
