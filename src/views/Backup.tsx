@@ -1,4 +1,3 @@
-```tsx
 import { useState } from 'react';
 import { exportDatabase, importDatabase } from '@/lib/db';
 
@@ -210,4 +209,3 @@ export default function Backup() {
     </div>
   );
 }
-```
