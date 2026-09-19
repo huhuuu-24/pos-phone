@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Plus, X, ChevronRight, Tag, Hash, Package, AlertCircle, CheckCircle, Smartphone, Headphones, Wrench } from 'lucide-react';
 import {
   getAllProductsWithStock, addProduct, getIMEIsByProduct, addIMEI,adjustStock,
-  deleteProduct
+  deleteProduct, updateProduct
 } from '@/lib/db';
 import { CATEGORY_LABELS } from '@/lib/db';
 import type { ProductWithStock, IMEIRecord, ProductCategory } from '@/types';
@@ -30,6 +30,9 @@ export default function Inventory() {
   const [selected, setSelected] = useState<ProductWithStock | null>(null);
 
   const [stockQty, setStockQty] = useState('1');
+
+  const [editCostPrice, setEditCostPrice] = useState('');
+  const [editSellingPrice, setEditSellingPrice] = useState('');
   
   const [imeis, setImeis] = useState<IMEIRecord[]>([]);
   const [newImei, setNewImei] = useState('');
@@ -55,6 +58,10 @@ export default function Inventory() {
 
   const openProduct = async (p: ProductWithStock) => {
     setSelected(p);
+    
+     setEditCostPrice(p.costPrice.toString());
+     setEditSellingPrice(p.sellingPrice.toString());
+    
     if (p.category === 'phone') {
       const all = await getIMEIsByProduct(p.id!);
       setImeis(all.sort((a, b) => (b.id ?? 0) - (a.id ?? 0)));
@@ -127,6 +134,27 @@ export default function Inventory() {
       ? `库存增加 ${qty}`
       : `库存减少 ${Math.abs(qty)}`
   );
+};
+  const handleSaveProduct = async () => {
+  if (!selected) return;
+
+  await updateProduct({
+    ...selected,
+    costPrice: Number(editCostPrice),
+    sellingPrice: Number(editSellingPrice),
+  });
+
+  showToast('商品资料已更新');
+
+  await loadProducts();
+
+  const refreshed = (
+    await getAllProductsWithStock()
+  ).find(p => p.id === selected.id);
+
+  if (refreshed) {
+    setSelected(refreshed);
+  }
 };
 
 const handleDeleteProduct = async () => {
@@ -300,16 +328,48 @@ const handleDeleteProduct = async () => {
                 </>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClass}>进货价 (RM) *</label>
-                  <input type="number" min="0" step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} placeholder="0.00" className={fieldClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>售价 (RM) *</label>
-                  <input type="number" min="0" step="0.01" value={form.sellingPrice} onChange={(e) => setForm({ ...form, sellingPrice: e.target.value })} placeholder="0.00" className={fieldClass} />
-                </div>
-              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+
+  <div>
+    <label className="text-slate-400 text-sm block mb-1">
+      进货价
+    </label>
+
+    <input
+      type="number"
+      step="0.01"
+      value={editCostPrice}
+      onChange={(e) =>
+        setEditCostPrice(e.target.value)
+      }
+      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
+    />
+  </div>
+
+  <div>
+    <label className="text-slate-400 text-sm block mb-1">
+      售价
+    </label>
+
+    <input
+      type="number"
+      step="0.01"
+      value={editSellingPrice}
+      onChange={(e) =>
+        setEditSellingPrice(e.target.value)
+      }
+      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
+    />
+  </div>
+
+</div>
+
+<button
+  onClick={handleSaveProduct}
+  className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold"
+>
+  保存修改
+</button>
 
               {form.costPrice && form.sellingPrice && (
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 flex justify-between text-sm">
