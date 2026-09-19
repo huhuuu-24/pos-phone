@@ -1,4 +1,4 @@
-import { ShoppingCart, Package, BarChart3, Smartphone } from 'lucide-react';
+import { ShoppingCart, Package, BarChart3, Smartphone, Database } from 'lucide-react';
 import type { View } from '@/types';
 
 interface SidebarProps {
@@ -10,6 +10,7 @@ const navItems: { view: View; label: string; icon: React.ReactNode }[] = [
   { view: 'pos', label: '收银台', icon: <ShoppingCart size={20} /> },
   { view: 'inventory', label: '库存管理', icon: <Package size={20} /> },
   { view: 'reports', label: '销售报表', icon: <BarChart3 size={20} /> },
+  { view: 'backup', label: '数据备份', icon: <Database size={20} /> },
 ];
 
 export default function Sidebar({ current, onChange }: SidebarProps) {
