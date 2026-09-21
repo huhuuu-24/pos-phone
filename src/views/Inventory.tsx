@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, X, ChevronRight, Tag, Hash, Package, AlertCircle, CheckCircle, Smartphone, Headphones, Wrench } from 'lucide-react';
-import {
-  getAllProductsWithStock, addProduct, getIMEIsByProduct, addIMEI,adjustStock,
-  deleteProduct, updateProduct
+import { getAllProductsWithStock, addProduct, getIMEIsByProduct, addIMEI, deleteIMEI, adjustStock, deleteProduct, updateProduct
 } from '@/lib/db';
 import { CATEGORY_LABELS } from '@/lib/db';
 import type { ProductWithStock, IMEIRecord, ProductCategory } from '@/types';
@@ -115,6 +113,35 @@ export default function Inventory() {
       showToast('该串号已存在，无法重复添加。', false);
     }
   };
+
+  const handleDeleteIMEI = async (
+  imeiId: number
+) => {
+  if (
+    !window.confirm(
+      '确定删除这个 IMEI 吗？'
+    )
+  ) {
+    return;
+  }
+
+  await deleteIMEI(imeiId);
+
+  if (!selected) return;
+
+  const all = await getIMEIsByProduct(
+    selected.id!
+  );
+
+  setImeis(
+    all.sort((a, b) => (b.id ?? 0) - (a.id ?? 0) )
+  );
+    
+  await loadProducts();
+
+  showToast('IMEI 已删除');
+};
+  
   const handleStockChange = async (qty: number) => {
   if (!selected) return;
 
