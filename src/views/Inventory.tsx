@@ -512,18 +512,40 @@ const handleDeleteProduct = async () => {
                   ) : (
                     <div className="grid grid-cols-1 gap-2">
                       {imeis.map((imei) => (
-                        <div key={imei.id} className={`flex items-center justify-between px-4 py-3 rounded-xl border ${imei.status === 'available' ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-900/50 border-slate-800 opacity-60'}`}>
-                          <span className="font-mono text-sm text-white">{imei.imei}</span>
-                          <span className={`text-xs px-3 py-1 rounded-full font-medium ${imei.status === 'available' ? 'bg-green-500/20 text-green-400' : 'bg-slate-600/40 text-slate-400'}`}>
-                            {imei.status === 'available' ? '在库' : '已售出'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+  <div
+    key={imei.id}
+    className={`flex items-center justify-between px-4 py-3 rounded-xl border ${
+      imei.status === 'available'
+        ? 'bg-slate-800/50 border-slate-700/50'
+        : 'bg-slate-900/50 border-slate-800 opacity-60'
+    }`}
+  >
+    <span className="font-mono text-sm text-white">
+      {imei.imei}
+    </span>
+
+    <div className="flex items-center gap-2">
+      <span
+        className={`text-xs px-3 py-1 rounded-full font-medium ${
+          imei.status === 'available'
+            ? 'bg-green-500/20 text-green-400'
+            : 'bg-slate-600/40 text-slate-400'
+        }`}
+      >
+        {imei.status === 'available' ? '在库' : '已售出'}
+      </span>
+
+      {imei.status === 'available' && (
+        <button
+          onClick={() => handleDeleteIMEI(imei.id!)}
+          className="px-2 py-1 text-xs bg-red-600 hover:bg-red-500 rounded-lg text-white"
+        >
+          删除
+        </button>
+      )}
+    </div>
+  </div>
+))}
 
             {/* Non-phone: simple stock info */}
             {selected.category !== 'phone' && (
