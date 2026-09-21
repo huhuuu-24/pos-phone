@@ -595,80 +595,84 @@ const handleDeleteProduct = async () => {
     )}
 
     {selected.category !== 'phone' && (
-      <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
-        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-          <Package size={18} className="text-blue-400" />
-          库存信息
-        </h3>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-slate-800/50 rounded-xl p-4">
-            <p className="text-slate-400 text-xs mb-1">
-              当前库存
-            </p>
-            <p className="text-white font-bold text-2xl">
-              {selected.stock}
-            </p>
-          </div>
+  <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
+    <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+      <Package size={18} className="text-blue-400" />
+      库存信息
+    </h3>
 
-          <div className="bg-slate-800/50 rounded-xl p-4">
-            <p className="text-slate-400 text-xs mb-1">
-              单件利润
-            </p>
-            <p className="text-green-400 font-bold text-2xl">
-              RM {(selected.sellingPrice - selected.costPrice).toFixed(2)}
-            </p>
-          </div>
+```
+<div className="grid grid-cols-3 gap-4">
+  <div className="bg-slate-800/50 rounded-xl p-4">
+    <p className="text-slate-400 text-xs mb-1">
+      当前库存
+    </p>
+    <p className="text-white font-bold text-2xl">
+      {selected.stock}
+    </p>
+  </div>
 
-          <div className="bg-slate-800/50 rounded-xl p-4">
-            <p className="text-slate-400 text-xs mb-1">
-              条形码
-            </p>
-            <p className="text-white font-mono text-sm mt-1">
-              {selected.barcode || '未设置'}
-            </p>
-          </div>
-        </div>
+  <div className="bg-slate-800/50 rounded-xl p-4">
+    <p className="text-slate-400 text-xs mb-1">
+      单件利润
+    </p>
+    <p className="text-green-400 font-bold text-2xl">
+      RM {(selected.sellingPrice - selected.costPrice).toFixed(2)}
+    </p>
+  </div>
 
-        <div className="flex gap-3 mt-6 items-center">
-          <input
-            type="number"
-            min="1"
-            value={stockQty}
-            onChange={(e) => setStockQty(e.target.value)}
-            placeholder="数量"
-            className="w-24 px-3 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white"
-          />
+  <div className="bg-slate-800/50 rounded-xl p-4">
+    <p className="text-slate-400 text-xs mb-1">
+      条形码
+    </p>
+    <p className="text-white font-mono text-sm mt-1">
+      {selected.barcode || '未设置'}
+    </p>
+  </div>
+</div>
 
-          <button
-            onClick={() =>
-              handleStockChange(Number(stockQty))
-            }
-            className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-semibold"
-          >
-            + 增加库存
-          </button>
+<div className="flex gap-3 mt-6 items-center">
+  <input
+    type="number"
+    min="1"
+    value={stockQty}
+    onChange={(e) => setStockQty(e.target.value)}
+    placeholder="数量"
+    className="w-24 px-3 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white"
+  />
 
-          <button
-            onClick={() =>
-              handleStockChange(-Number(stockQty))
-            }
-            className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold"
-          >
-            - 减少库存
-          </button>
+  <button
+    onClick={() =>
+      handleStockChange(Number(stockQty))
+    }
+    className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-semibold"
+  >
+    + 增加库存
+  </button>
 
-          <button
-            onClick={handleDeleteProduct}
-            className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-xl font-semibold"
-          >
-            删除商品
-          </button>
-        </div>
-      </div>
-    )}
+  <button
+    onClick={() =>
+      handleStockChange(-Number(stockQty))
+    }
+    className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold"
+  >
+    - 减少库存
+  </button>
+</div>
+```
+
   </div>
 )}
+
+<div className="mt-6">
+  <button
+    onClick={handleDeleteProduct}
+    className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-xl font-semibold text-white"
+  >
+    删除商品
+  </button>
+</div>
       </div>
     </div>
   );
