@@ -606,7 +606,6 @@ const handleDeleteProduct = async () => {
           </div>
         )}
       </div>
-     </div>
     </>
   );
 }
