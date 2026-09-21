@@ -602,7 +602,6 @@ const handleDeleteProduct = async () => {
       库存信息
     </h3>
 
-```
 <div className="grid grid-cols-3 gap-4">
   <div className="bg-slate-800/50 rounded-xl p-4">
     <p className="text-slate-400 text-xs mb-1">
@@ -660,7 +659,6 @@ const handleDeleteProduct = async () => {
     - 减少库存
   </button>
 </div>
-```
 
   </div>
 )}
