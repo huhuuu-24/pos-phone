@@ -594,7 +594,7 @@ const handleDeleteProduct = async () => {
       </>
     )}
 
-    {selected.category !== 'phone' && (
+ {selected.category !== 'phone' && (
 
   <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
     <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -671,6 +671,10 @@ const handleDeleteProduct = async () => {
     删除商品
   </button>
 </div>
+
+  </div>
+)}
+        
       </div>
     </div>
   );
