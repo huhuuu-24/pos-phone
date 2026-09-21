@@ -155,6 +155,12 @@ export async function getIMEIsByProduct(productId: number): Promise<IMEIRecord[]
   return request<IMEIRecord[]>(tx.objectStore('imeis').index('productId').getAll(productId));
 }
 
+export async function deleteIMEI(  id: number): Promise<void> { 
+  const db = await openDB();
+  const tx = db.transaction('imeis', 'readwrite');
+  await request(tx.objectStore('imeis').delete(id));
+}
+
 export async function getAvailableIMEIsByProduct(productId: number): Promise<IMEIRecord[]> {
   const all = await getIMEIsByProduct(productId);
   return all.filter((i) => i.status === 'available');
