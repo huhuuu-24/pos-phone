@@ -197,6 +197,7 @@ export default function Inventory() {
           : 0;
 
     await addProduct({
+      sku: form.sku.trim(),
       category: form.category,
       brand: form.brand.trim(),
       model: form.model.trim(),
@@ -220,6 +221,7 @@ export default function Inventory() {
     );
 
     setForm({
+      sku: '',
       category: 'phone',
       brand: '',
       model: '',
@@ -422,6 +424,7 @@ export default function Inventory() {
     }
 
     const updatedProduct = {
+      sku: '',
       id: selected.id,
       category: selected.category,
       brand: selected.brand,
