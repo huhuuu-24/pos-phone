@@ -753,6 +753,24 @@ export default function Inventory() {
             </div>
 
             {/* 基本资料 */}
+            <div>
+  <label className="block text-sm text-slate-400 mb-2">
+    商品编号
+  </label>
+
+  <input
+    value={form.sku}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        sku: e.target.value,
+      })
+    }
+    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white"
+    placeholder="例如 PH0001"
+  />
+</div>
+            
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-5">
 
               <h3 className="font-semibold mb-4">
