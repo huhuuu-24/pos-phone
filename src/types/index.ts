@@ -2,6 +2,7 @@ export type ProductCategory = 'phone' | 'accessory' | 'service';
 
 export interface Product {
   id?: number;
+  sku?: string;
   category: ProductCategory;
   brand: string;
   model: string;
