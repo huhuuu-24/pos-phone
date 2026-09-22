@@ -581,6 +581,7 @@ export default function Inventory() {
                         <div className="flex items-center gap-2 mb-1">
 
                           <span className="text-white font-semibold truncate">
+                             {product.sku ? `[${product.sku}] ` : ''}
                             {product.brand}{' '}
                             {product.model}
                           </span>
