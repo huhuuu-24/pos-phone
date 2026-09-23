@@ -111,6 +111,8 @@ export default function Inventory() {
     loadProducts();
   }, [loadProducts]);
 
+  const [search, setSearch] = useState('');
+
   const showToast = (
     msg: string,
     ok = true
@@ -222,7 +224,7 @@ export default function Inventory() {
 
     setForm({
       sku: '',
-      category: 'phone',
+      category: 'phone' as ProductCategory,
       brand: '',
       model: '',
       color: COLORS[0],
@@ -493,7 +495,7 @@ export default function Inventory() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-950 text-white overflow-hidden relative">
+    <div Name="flex h-screen bg-slate-950 text-white overflow-hidden relative">
 
       {toast && (
         <div
@@ -541,6 +543,18 @@ export default function Inventory() {
 
         <div className="flex-1 overflow-y-auto p-3">
 
+          <div className="mb-4">
+  <input
+    type="text"
+    value={search}
+    onChange={(e) =>
+      setSearch(e.target.value)
+    }
+    placeholder="搜索编号、品牌、型号、条码"
+    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+  />
+</div>
+
           {products.length === 0 ? (
             <div className="text-center text-slate-600 py-16">
               <Package
@@ -559,7 +573,24 @@ export default function Inventory() {
           ) : (
             <div className="space-y-2">
 
-              {products.map(
+              {products.filter((product) => {
+    const q = search.toLowerCase();
+
+    return (
+      product.sku
+        ?.toLowerCase()
+        .includes(q) ||
+      product.brand
+        .toLowerCase()
+        .includes(q) ||
+      product.model
+        .toLowerCase()
+        .includes(q) ||
+      product.barcode
+        ?.toLowerCase()
+        .includes(q)
+    );
+  }).map(
                 (product) => (
                   <button
                     key={product.id}
