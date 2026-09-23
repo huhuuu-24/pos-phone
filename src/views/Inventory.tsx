@@ -88,6 +88,7 @@ export default function Inventory() {
   } | null>(null);
 
   const [form, setForm] = useState({
+    sku: '',
     category: 'phone' as ProductCategory,
     brand: '',
     model: '',
@@ -426,7 +427,7 @@ export default function Inventory() {
     }
 
     const updatedProduct = {
-      sku: '',
+      sku: selected.sku,
       id: selected.id,
       category: selected.category,
       brand: selected.brand,
