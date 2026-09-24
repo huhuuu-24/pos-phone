@@ -87,6 +87,8 @@ export default function Inventory() {
     ok: boolean;
   } | null>(null);
 
+  const [search, setSearch] = useState('');
+
   const [form, setForm] = useState({
     sku: '',
     category: 'phone' as ProductCategory,
@@ -112,12 +114,7 @@ export default function Inventory() {
     loadProducts();
   }, [loadProducts]);
 
-  const [search, setSearch] = useState('');
-
-  const showToast = (
-    msg: string,
-    ok = true
-  ) => {
+  const showToast = (msg: string, ok = true) => {
     setToast({ msg, ok });
 
     setTimeout(() => {
@@ -125,30 +122,19 @@ export default function Inventory() {
     }, 3000);
   };
 
-  const openProduct = async (
-    product: ProductWithStock
-  ) => {
+  const openProduct = async (product: ProductWithStock) => {
     setSelected(product);
 
-    setEditCostPrice(
-      product.costPrice.toString()
-    );
-
-    setEditSellingPrice(
-      product.sellingPrice.toString()
-    );
-
+    setEditCostPrice(product.costPrice.toString());
+    setEditSellingPrice(product.sellingPrice.toString());
     setStockQty('1');
 
     if (product.category === 'phone') {
-      const all = await getIMEIsByProduct(
-        product.id!
-      );
+      const all = await getIMEIsByProduct(product.id!);
 
       setImeis(
         all.sort(
-          (a, b) =>
-            (b.id ?? 0) - (a.id ?? 0)
+          (a, b) => (b.id ?? 0) - (a.id ?? 0)
         )
       );
     } else {
@@ -165,18 +151,12 @@ export default function Inventory() {
       !form.costPrice ||
       !form.sellingPrice
     ) {
-      showToast(
-        '请填写所有必填字段。',
-        false
-      );
+      showToast('请填写所有必填字段。', false);
       return;
     }
 
-    const costPrice =
-      parseFloat(form.costPrice);
-
-    const sellingPrice =
-      parseFloat(form.sellingPrice);
+    const costPrice = parseFloat(form.costPrice);
+    const sellingPrice = parseFloat(form.sellingPrice);
 
     if (
       Number.isNaN(costPrice) ||
@@ -189,39 +169,29 @@ export default function Inventory() {
       return;
     }
 
-    const isPhone =
-      form.category === 'phone';
+    const isPhone = form.category === 'phone';
 
-    const stockQty =
-      isPhone
-        ? 0
-        : form.stockQty
-          ? parseInt(form.stockQty)
-          : 0;
+    const stockQty = isPhone
+      ? 0
+      : form.stockQty
+        ? parseInt(form.stockQty)
+        : 0;
 
     await addProduct({
       sku: form.sku.trim(),
       category: form.category,
       brand: form.brand.trim(),
       model: form.model.trim(),
-      color: isPhone
-        ? form.color
-        : '',
-      config: isPhone
-        ? form.config
-        : '',
-      barcode:
-        form.barcode.trim(),
+      color: isPhone ? form.color : '',
+      config: isPhone ? form.config : '',
+      barcode: form.barcode.trim(),
       costPrice,
       sellingPrice,
       stockQty,
-      createdAt:
-        new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     });
 
-    showToast(
-      '商品已成功添加！'
-    );
+    showToast('商品已成功添加！');
 
     setForm({
       sku: '',
@@ -242,15 +212,11 @@ export default function Inventory() {
   };
 
   const handleAddIMEI = async () => {
-    if (
-      !newImei.trim() ||
-      !selected
-    ) {
+    if (!newImei.trim() || !selected) {
       return;
     }
 
-    const code =
-      newImei.trim();
+    const code = newImei.trim();
 
     try {
       await addIMEI({
@@ -259,35 +225,29 @@ export default function Inventory() {
         status: 'available',
       });
 
-      showToast(
-        `串号 ${code} 已添加。`
-      );
+      showToast(`串号 ${code} 已添加。`);
 
       setNewImei('');
 
-      const all =
-        await getIMEIsByProduct(
-          selected.id!
-        );
+      const all = await getIMEIsByProduct(
+        selected.id!
+      );
 
       setImeis(
         all.sort(
-          (a, b) =>
-            (b.id ?? 0) - (a.id ?? 0)
+          (a, b) => (b.id ?? 0) - (a.id ?? 0)
         )
       );
 
       await loadProducts();
 
-      setSelected(
-        (prev) =>
-          prev
-            ? {
-                ...prev,
-                stock:
-                  prev.stock + 1,
-              }
-            : prev
+      setSelected((prev) =>
+        prev
+          ? {
+              ...prev,
+              stock: prev.stock + 1,
+            }
+          : prev
       );
     } catch {
       showToast(
@@ -314,35 +274,29 @@ export default function Inventory() {
       return;
     }
 
-    const all =
-      await getIMEIsByProduct(
-        selected.id!
-      );
+    const all = await getIMEIsByProduct(
+      selected.id!
+    );
 
     setImeis(
       all.sort(
-        (a, b) =>
-          (b.id ?? 0) - (a.id ?? 0)
+        (a, b) => (b.id ?? 0) - (a.id ?? 0)
       )
     );
 
     await loadProducts();
 
-    const refreshed =
-      (
-        await getAllProductsWithStock()
-      ).find(
-        (p) =>
-          p.id === selected.id
-      );
+    const refreshed = (
+      await getAllProductsWithStock()
+    ).find(
+      (p) => p.id === selected.id
+    );
 
     if (refreshed) {
       setSelected(refreshed);
     }
 
-    showToast(
-      'IMEI 已删除'
-    );
+    showToast('IMEI 已删除');
   };
 
   const handleStockChange = async (
@@ -381,13 +335,11 @@ export default function Inventory() {
 
     await loadProducts();
 
-    const refreshed =
-      (
-        await getAllProductsWithStock()
-      ).find(
-        (p) =>
-          p.id === selected.id
-      );
+    const refreshed = (
+      await getAllProductsWithStock()
+    ).find(
+      (p) => p.id === selected.id
+    );
 
     if (refreshed) {
       setSelected(refreshed);
@@ -407,9 +359,7 @@ export default function Inventory() {
       return;
     }
 
-    const costPrice =
-      Number(editCostPrice);
-
+    const costPrice = Number(editCostPrice);
     const sellingPrice =
       Number(editSellingPrice);
 
@@ -435,31 +385,23 @@ export default function Inventory() {
       color: selected.color,
       config: selected.config,
       barcode: selected.barcode,
-      stockQty:
-        selected.stockQty,
-      createdAt:
-        selected.createdAt,
+      stockQty: selected.stockQty,
+      createdAt: selected.createdAt,
       costPrice,
       sellingPrice,
     };
 
-    await updateProduct(
-      updatedProduct
-    );
+    await updateProduct(updatedProduct);
 
-    showToast(
-      '商品资料已更新'
-    );
+    showToast('商品资料已更新');
 
     await loadProducts();
 
-    const refreshed =
-      (
-        await getAllProductsWithStock()
-      ).find(
-        (p) =>
-          p.id === selected.id
-      );
+    const refreshed = (
+      await getAllProductsWithStock()
+    ).find(
+      (p) => p.id === selected.id
+    );
 
     if (refreshed) {
       setSelected(refreshed);
@@ -471,22 +413,17 @@ export default function Inventory() {
       return;
     }
 
-    const confirmed =
-      window.confirm(
-        `确定删除 ${selected.brand} ${selected.model} 吗？\n\n删除后商品资料、库存以及该商品的 IMEI 都会被删除。`
-      );
+    const confirmed = window.confirm(
+      `确定删除 ${selected.brand} ${selected.model} 吗？\n\n删除后商品资料、库存以及该商品的 IMEI 都会被删除。`
+    );
 
     if (!confirmed) {
       return;
     }
 
-    await deleteProduct(
-      selected.id!
-    );
+    await deleteProduct(selected.id!);
 
-    showToast(
-      '商品已删除'
-    );
+    showToast('商品已删除');
 
     setSelected(null);
 
@@ -496,7 +433,7 @@ export default function Inventory() {
   };
 
   return (
-    <div Name="flex h-screen bg-slate-950 text-white overflow-hidden relative">
+    <div className="flex h-screen bg-slate-950 text-white overflow-hidden relative">
 
       {toast && (
         <div
@@ -545,16 +482,16 @@ export default function Inventory() {
         <div className="flex-1 overflow-y-auto p-3">
 
           <div className="mb-4">
-  <input
-    type="text"
-    value={search}
-    onChange={(e) =>
-      setSearch(e.target.value)
-    }
-    placeholder="搜索编号、品牌、型号、条码"
-    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500"
-  />
-</div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              placeholder="搜索编号、品牌、型号、条码"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
 
           {products.length === 0 ? (
             <div className="text-center text-slate-600 py-16">
@@ -563,9 +500,7 @@ export default function Inventory() {
                 className="mx-auto mb-3 opacity-40"
               />
 
-              <p>
-                暂无商品
-              </p>
+              <p>暂无商品</p>
 
               <p className="text-sm mt-1">
                 点击右上角 + 添加商品
@@ -574,25 +509,27 @@ export default function Inventory() {
           ) : (
             <div className="space-y-2">
 
-              {products.filter((product) => {
-    const q = search.toLowerCase();
+              {products
+                .filter((product) => {
+                  const q =
+                    search.toLowerCase();
 
-    return (
-      product.sku
-        ?.toLowerCase()
-        .includes(q) ||
-      product.brand
-        .toLowerCase()
-        .includes(q) ||
-      product.model
-        .toLowerCase()
-        .includes(q) ||
-      product.barcode
-        ?.toLowerCase()
-        .includes(q)
-    );
-  }).map(
-                (product) => (
+                  return (
+                    (product.sku ?? '')
+                      .toLowerCase()
+                      .includes(q) ||
+                    product.brand
+                      .toLowerCase()
+                      .includes(q) ||
+                    product.model
+                      .toLowerCase()
+                      .includes(q) ||
+                    (product.barcode ?? '')
+                      .toLowerCase()
+                      .includes(q)
+                  );
+                })
+                .map((product) => (
                   <button
                     key={product.id}
                     onClick={() =>
@@ -613,7 +550,9 @@ export default function Inventory() {
                         <div className="flex items-center gap-2 mb-1">
 
                           <span className="text-white font-semibold truncate">
-                             {product.sku ? `[${product.sku}] ` : ''}
+                            {product.sku
+                              ? `[${product.sku}] `
+                              : ''}
                             {product.brand}{' '}
                             {product.model}
                           </span>
@@ -691,8 +630,7 @@ export default function Inventory() {
                     </div>
 
                   </button>
-                )
-              )}
+                ))}
 
             </div>
           )}
@@ -702,12 +640,11 @@ export default function Inventory() {
       </div>
 
       {/* 右边内容 */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-w-0 overflow-y-auto">
 
         {/* 新增商品 */}
-        {panel ===
-          'add-product' && (
-          <div className="p-8 max-w-3xl">
+        {panel === 'add-product' && (
+          <div className="p-8 max-w-3xl min-h-full pb-12">
 
             <div className="flex items-center justify-between mb-8">
 
@@ -747,63 +684,62 @@ export default function Inventory() {
                     'accessory',
                     'service',
                   ] as ProductCategory[]
-                ).map(
-                  (category) => (
-                    <button
-                      key={category}
-                      onClick={() =>
-                        setForm({
-                          ...form,
-                          category,
-                        })
-                      }
-                      className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
-                        form.category ===
+                ).map((category) => (
+                  <button
+                    key={category}
+                    onClick={() =>
+                      setForm({
+                        ...form,
+                        category,
+                      })
+                    }
+                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${
+                      form.category ===
+                      category
+                        ? 'border-blue-500 bg-blue-500/10 text-blue-400'
+                        : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                    }`}
+                  >
+                    {
+                      CATEGORY_ICONS[
                         category
-                          ? 'border-blue-500 bg-blue-500/10 text-blue-400'
-                          : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
-                      }`}
-                    >
+                      ]
+                    }
+
+                    <span className="text-sm font-medium">
                       {
-                        CATEGORY_ICONS[
+                        CATEGORY_LABELS[
                           category
                         ]
                       }
-
-                      <span className="text-sm font-medium">
-                        {
-                          CATEGORY_LABELS[
-                            category
-                          ]
-                        }
-                      </span>
-                    </button>
-                  )
-                )}
+                    </span>
+                  </button>
+                ))}
 
               </div>
 
             </div>
 
-            {/* 基本资料 */}
-            <div>
-  <label className="block text-sm text-slate-400 mb-2">
-    商品编号
-  </label>
+            {/* 商品编号 */}
+            <div className="mb-5">
+              <label className="block text-sm text-slate-400 mb-2">
+                商品编号
+              </label>
 
-  <input
-    value={form.sku}
-    onChange={(e) =>
-      setForm({
-        ...form,
-        sku: e.target.value,
-      })
-    }
-    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white"
-    placeholder="例如 PH0001"
-  />
-</div>
-            
+              <input
+                value={form.sku}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    sku: e.target.value,
+                  })
+                }
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-blue-500"
+                placeholder="例如 PH0001"
+              />
+            </div>
+
+            {/* 基本资料 */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-5">
 
               <h3 className="font-semibold mb-4">
@@ -863,9 +799,7 @@ export default function Inventory() {
                     </label>
 
                     <select
-                      value={
-                        form.color
-                      }
+                      value={form.color}
                       onChange={(e) =>
                         setForm({
                           ...form,
@@ -894,9 +828,7 @@ export default function Inventory() {
                     </label>
 
                     <select
-                      value={
-                        form.config
-                      }
+                      value={form.config}
                       onChange={(e) =>
                         setForm({
                           ...form,
@@ -922,7 +854,7 @@ export default function Inventory() {
                 </div>
               )}
 
-              {/* 配件/服务条码和库存 */}
+              {/* 配件 / 服务 */}
               {form.category !==
                 'phone' && (
                 <div className="grid grid-cols-2 gap-4 mt-4">
@@ -933,9 +865,7 @@ export default function Inventory() {
                     </label>
 
                     <input
-                      value={
-                        form.barcode
-                      }
+                      value={form.barcode}
                       onChange={(e) =>
                         setForm({
                           ...form,
@@ -956,9 +886,7 @@ export default function Inventory() {
                     <input
                       type="number"
                       min="0"
-                      value={
-                        form.stockQty
-                      }
+                      value={form.stockQty}
                       onChange={(e) =>
                         setForm({
                           ...form,
@@ -986,9 +914,7 @@ export default function Inventory() {
                     type="number"
                     step="0.01"
                     min="0"
-                    value={
-                      form.costPrice
-                    }
+                    value={form.costPrice}
                     onChange={(e) =>
                       setForm({
                         ...form,
@@ -1029,7 +955,7 @@ export default function Inventory() {
 
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 pb-8">
 
               <button
                 onClick={() =>
@@ -1041,9 +967,7 @@ export default function Inventory() {
               </button>
 
               <button
-                onClick={
-                  handleAddProduct
-                }
+                onClick={handleAddProduct}
                 className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold"
               >
                 添加商品
@@ -1055,423 +979,418 @@ export default function Inventory() {
         )}
 
         {/* 商品详情 */}
-        {panel ===
-          'product-detail' &&
+        {panel === 'product-detail' &&
           selected && (
-          <div className="p-8">
+            <div className="p-8 min-h-full pb-12">
 
-            <div className="flex items-start justify-between mb-8">
+              <div className="flex items-start justify-between mb-8">
 
-              <div>
+                <div>
 
-                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2">
 
-                  <h2 className="text-white font-bold text-2xl">
-                    {selected.brand}{' '}
-                    {selected.model}
-                  </h2>
+                    <h2 className="text-white font-bold text-2xl">
+                      {selected.brand}{' '}
+                      {selected.model}
+                    </h2>
 
-                  <span
-                    className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 ${
-                      CATEGORY_BADGE[
-                        selected.category
-                      ]
-                    }`}
+                    <span
+                      className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 ${
+                        CATEGORY_BADGE[
+                          selected.category
+                        ]
+                      }`}
+                    >
+                      {
+                        CATEGORY_ICONS[
+                          selected.category
+                        ]
+                      }
+
+                      {
+                        CATEGORY_LABELS[
+                          selected.category
+                        ]
+                      }
+                    </span>
+
+                  </div>
+
+                  {selected.category ===
+                  'phone' ? (
+                    <p className="text-slate-400 mt-1">
+                      {selected.color} ·{' '}
+                      {selected.config}
+                    </p>
+                  ) : (
+                    <p className="text-slate-400 mt-1">
+                      {selected.barcode
+                        ? `条码: ${selected.barcode}`
+                        : '无条码'}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-4 mt-3">
+
+                    <span className="text-slate-400 text-sm">
+                      进货价：
+                      <span className="text-white ml-1">
+                        RM{' '}
+                        {selected.costPrice.toFixed(
+                          2
+                        )}
+                      </span>
+                    </span>
+
+                    <span className="text-slate-400 text-sm">
+                      售价：
+                      <span className="text-blue-400 font-semibold ml-1">
+                        RM{' '}
+                        {selected.sellingPrice.toFixed(
+                          2
+                        )}
+                      </span>
+                    </span>
+
+                  </div>
+
+                  {/* 修改价格 */}
+                  <div className="grid grid-cols-2 gap-4 mt-4 max-w-xl">
+
+                    <div>
+                      <label className="text-slate-400 text-sm block mb-1">
+                        修改进货价
+                      </label>
+
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={
+                          editCostPrice
+                        }
+                        onChange={(e) =>
+                          setEditCostPrice(
+                            e.target.value
+                          )
+                        }
+                        className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-slate-400 text-sm block mb-1">
+                        修改售价
+                      </label>
+
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={
+                          editSellingPrice
+                        }
+                        onChange={(e) =>
+                          setEditSellingPrice(
+                            e.target.value
+                          )
+                        }
+                        className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
+                      />
+                    </div>
+
+                  </div>
+
+                  <button
+                    onClick={
+                      handleSaveProduct
+                    }
+                    className="mt-4 px-5 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold"
                   >
-                    {
-                      CATEGORY_ICONS[
-                        selected.category
-                      ]
-                    }
-
-                    {
-                      CATEGORY_LABELS[
-                        selected.category
-                      ]
-                    }
-                  </span>
+                    保存修改
+                  </button>
 
                 </div>
 
-                {selected.category ===
-                'phone' ? (
-                  <p className="text-slate-400 mt-1">
-                    {selected.color} ·{' '}
-                    {selected.config}
-                  </p>
-                ) : (
-                  <p className="text-slate-400 mt-1">
-                    {selected.barcode
-                      ? `条码: ${selected.barcode}`
-                      : '无条码'}
-                  </p>
-                )}
-
-                <div className="flex items-center gap-4 mt-3">
-
-                  <span className="text-slate-400 text-sm">
-                    进货价：
-                    <span className="text-white ml-1">
-                      RM{' '}
-                      {selected.costPrice.toFixed(
-                        2
-                      )}
-                    </span>
-                  </span>
-
-                  <span className="text-slate-400 text-sm">
-                    售价：
-                    <span className="text-blue-400 font-semibold ml-1">
-                      RM{' '}
-                      {selected.sellingPrice.toFixed(
-                        2
-                      )}
-                    </span>
-                  </span>
-
-                </div>
-
-                {/* 修改价格 */}
-                <div className="grid grid-cols-2 gap-4 mt-4 max-w-xl">
-
-                  <div>
-                    <label className="text-slate-400 text-sm block mb-1">
-                      修改进货价
-                    </label>
-
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={
-                        editCostPrice
-                      }
-                      onChange={(e) =>
-                        setEditCostPrice(
-                          e.target.value
-                        )
-                      }
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-slate-400 text-sm block mb-1">
-                      修改售价
-                    </label>
-
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={
-                        editSellingPrice
-                      }
-                      onChange={(e) =>
-                        setEditSellingPrice(
-                          e.target.value
-                        )
-                      }
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-white"
-                    />
-                  </div>
-
-                </div>
-
-                <button
-                  onClick={
-                    handleSaveProduct
-                  }
-                  className="mt-4 px-5 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl font-semibold"
+                <div
+                  className={`px-4 py-2 rounded-xl text-lg font-bold ${
+                    selected.stock > 0
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-red-500/20 text-red-400'
+                  }`}
                 >
-                  保存修改
-                </button>
+                  库存：{selected.stock}
+                </div>
 
               </div>
 
-              <div
-                className={`px-4 py-2 rounded-xl text-lg font-bold ${
-                  selected.stock > 0
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-red-500/20 text-red-400'
-                }`}
-              >
-                库存：{selected.stock}
-              </div>
+              {/* 手机 IMEI */}
+              {selected.category ===
+                'phone' && (
+                <>
+                  <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-5 mb-6">
 
-            </div>
+                    <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                      <Hash
+                        size={18}
+                        className="text-blue-400"
+                      />
 
-            {/* 手机 IMEI */}
-            {selected.category ===
-              'phone' && (
-              <>
-                <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-5 mb-6">
+                      录入 IMEI 串号
+                    </h3>
+
+                    <div className="flex gap-3">
+
+                      <input
+                        value={newImei}
+                        onChange={(e) =>
+                          setNewImei(
+                            e.target.value
+                          )
+                        }
+                        onKeyDown={(e) => {
+                          if (
+                            e.key === 'Enter'
+                          ) {
+                            handleAddIMEI();
+                          }
+                        }}
+                        placeholder="输入或扫描 IMEI 串号，按 Enter 添加..."
+                        className="flex-1 bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white font-mono placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                      />
+
+                      <button
+                        onClick={
+                          handleAddIMEI
+                        }
+                        disabled={
+                          !newImei.trim()
+                        }
+                        className="px-5 bg-blue-500 hover:bg-blue-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-semibold rounded-xl"
+                      >
+                        添加
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                  <div>
+
+                    <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                      <Tag
+                        size={18}
+                        className="text-blue-400"
+                      />
+
+                      串号记录（
+                      {imeis.length} 条）
+                    </h3>
+
+                    {imeis.length ===
+                    0 ? (
+                      <div className="text-center text-slate-600 py-12">
+                        <p>
+                          暂无串号记录
+                        </p>
+
+                        <p className="text-sm mt-1">
+                          请在上方录入 IMEI
+                          串号
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-2">
+
+                        {imeis.map(
+                          (imei) => (
+                            <div
+                              key={
+                                imei.id
+                              }
+                              className={`flex items-center justify-between px-4 py-3 rounded-xl border ${
+                                imei.status ===
+                                'available'
+                                  ? 'bg-slate-800/50 border-slate-700/50'
+                                  : 'bg-slate-900/50 border-slate-800 opacity-60'
+                              }`}
+                            >
+
+                              <span className="font-mono text-sm text-white">
+                                {
+                                  imei.imei
+                                }
+                              </span>
+
+                              <div className="flex items-center gap-2">
+
+                                <span
+                                  className={`text-xs px-3 py-1 rounded-full font-medium ${
+                                    imei.status ===
+                                    'available'
+                                      ? 'bg-green-500/20 text-green-400'
+                                      : 'bg-slate-600/40 text-slate-400'
+                                  }`}
+                                >
+                                  {imei.status ===
+                                  'available'
+                                    ? '在库'
+                                    : '已售出'}
+                                </span>
+
+                                {imei.status ===
+                                  'available' && (
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteIMEI(
+                                        imei.id!
+                                      )
+                                    }
+                                    className="px-2 py-1 text-xs bg-red-600 hover:bg-red-500 rounded-lg text-white"
+                                  >
+                                    删除
+                                  </button>
+                                )}
+
+                              </div>
+
+                            </div>
+                          )
+                        )}
+
+                      </div>
+                    )}
+
+                  </div>
+                </>
+              )}
+
+              {/* 配件 / 服务库存 */}
+              {selected.category !==
+                'phone' && (
+                <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
 
                   <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                    <Hash
+                    <Package
                       size={18}
                       className="text-blue-400"
                     />
 
-                    录入 IMEI 串号
+                    库存信息
                   </h3>
 
-                  <div className="flex gap-3">
+                  <div className="grid grid-cols-3 gap-4">
+
+                    <div className="bg-slate-800/50 rounded-xl p-4">
+                      <p className="text-slate-400 text-xs mb-1">
+                        当前库存
+                      </p>
+
+                      <p className="text-white font-bold text-2xl">
+                        {selected.stock}
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-800/50 rounded-xl p-4">
+                      <p className="text-slate-400 text-xs mb-1">
+                        单件利润
+                      </p>
+
+                      <p className="text-green-400 font-bold text-2xl">
+                        RM{' '}
+                        {(
+                          selected.sellingPrice -
+                          selected.costPrice
+                        ).toFixed(2)}
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-800/50 rounded-xl p-4">
+                      <p className="text-slate-400 text-xs mb-1">
+                        条形码
+                      </p>
+
+                      <p className="text-white font-mono text-sm mt-1">
+                        {selected.barcode ||
+                          '未设置'}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <div className="flex gap-3 mt-6 items-center">
 
                     <input
-                      value={newImei}
+                      type="number"
+                      min="1"
+                      value={stockQty}
                       onChange={(e) =>
-                        setNewImei(
+                        setStockQty(
                           e.target.value
                         )
                       }
                       onKeyDown={(e) => {
                         if (
-                          e.key ===
-                          'Enter'
+                          e.key === 'Enter'
                         ) {
-                          handleAddIMEI();
+                          handleStockChange(
+                            Number(
+                              stockQty
+                            )
+                          );
                         }
                       }}
-                      placeholder="输入或扫描 IMEI 串号，按 Enter 添加..."
-                      className="flex-1 bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white font-mono placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                      placeholder="数量"
+                      className="w-28 px-3 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white"
                     />
 
                     <button
-                      onClick={
-                        handleAddIMEI
+                      onClick={() =>
+                        handleStockChange(
+                          Number(
+                            stockQty
+                          )
+                        )
                       }
-                      disabled={
-                        !newImei.trim()
-                      }
-                      className="px-5 bg-blue-500 hover:bg-blue-400 disabled:bg-slate-700 disabled:text-slate-500 text-white font-semibold rounded-xl"
+                      className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-semibold"
                     >
-                      添加
+                      + 增加库存
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleStockChange(
+                          -Number(
+                            stockQty
+                          )
+                        )
+                      }
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold"
+                    >
+                      - 减少库存
                     </button>
 
                   </div>
 
                 </div>
+              )}
 
-                <div>
+              {/* 删除商品 */}
+              <div className="mt-6 pb-8">
 
-                  <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                    <Tag
-                      size={18}
-                      className="text-blue-400"
-                    />
-
-                    串号记录（
-                    {imeis.length} 条）
-                  </h3>
-
-                  {imeis.length ===
-                  0 ? (
-                    <div className="text-center text-slate-600 py-12">
-                      <p>
-                        暂无串号记录
-                      </p>
-
-                      <p className="text-sm mt-1">
-                        请在上方录入 IMEI
-                        串号
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 gap-2">
-
-                      {imeis.map(
-                        (imei) => (
-                          <div
-                            key={
-                              imei.id
-                            }
-                            className={`flex items-center justify-between px-4 py-3 rounded-xl border ${
-                              imei.status ===
-                              'available'
-                                ? 'bg-slate-800/50 border-slate-700/50'
-                                : 'bg-slate-900/50 border-slate-800 opacity-60'
-                            }`}
-                          >
-
-                            <span className="font-mono text-sm text-white">
-                              {
-                                imei.imei
-                              }
-                            </span>
-
-                            <div className="flex items-center gap-2">
-
-                              <span
-                                className={`text-xs px-3 py-1 rounded-full font-medium ${
-                                  imei.status ===
-                                  'available'
-                                    ? 'bg-green-500/20 text-green-400'
-                                    : 'bg-slate-600/40 text-slate-400'
-                                }`}
-                              >
-                                {imei.status ===
-                                'available'
-                                  ? '在库'
-                                  : '已售出'}
-                              </span>
-
-                              {imei.status ===
-                                'available' && (
-                                <button
-                                  onClick={() =>
-                                    handleDeleteIMEI(
-                                      imei.id!
-                                    )
-                                  }
-                                  className="px-2 py-1 text-xs bg-red-600 hover:bg-red-500 rounded-lg text-white"
-                                >
-                                  删除
-                                </button>
-                              )}
-
-                            </div>
-
-                          </div>
-                        )
-                      )}
-
-                    </div>
-                  )}
-
-                </div>
-              </>
-            )}
-
-            {/* 配件 / 服务库存 */}
-            {selected.category !==
-              'phone' && (
-              <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6">
-
-                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                  <Package
-                    size={18}
-                    className="text-blue-400"
-                  />
-
-                  库存信息
-                </h3>
-
-                <div className="grid grid-cols-3 gap-4">
-
-                  <div className="bg-slate-800/50 rounded-xl p-4">
-                    <p className="text-slate-400 text-xs mb-1">
-                      当前库存
-                    </p>
-
-                    <p className="text-white font-bold text-2xl">
-                      {selected.stock}
-                    </p>
-                  </div>
-
-                  <div className="bg-slate-800/50 rounded-xl p-4">
-                    <p className="text-slate-400 text-xs mb-1">
-                      单件利润
-                    </p>
-
-                    <p className="text-green-400 font-bold text-2xl">
-                      RM{' '}
-                      {(
-                        selected.sellingPrice -
-                        selected.costPrice
-                      ).toFixed(2)}
-                    </p>
-                  </div>
-
-                  <div className="bg-slate-800/50 rounded-xl p-4">
-                    <p className="text-slate-400 text-xs mb-1">
-                      条形码
-                    </p>
-
-                    <p className="text-white font-mono text-sm mt-1">
-                      {selected.barcode ||
-                        '未设置'}
-                    </p>
-                  </div>
-
-                </div>
-
-                <div className="flex gap-3 mt-6 items-center">
-
-                  <input
-                    type="number"
-                    min="1"
-                    value={
-                      stockQty
-                    }
-                    onChange={(e) =>
-                      setStockQty(
-                        e.target.value
-                      )
-                    }
-                    onKeyDown={(e) => {
-                      if (
-                        e.key ===
-                        'Enter'
-                      ) {
-                        handleStockChange(
-                          Number(
-                            stockQty
-                          )
-                        );
-                      }
-                    }}
-                    placeholder="数量"
-                    className="w-28 px-3 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white"
-                  />
-
-                  <button
-                    onClick={() =>
-                      handleStockChange(
-                        Number(
-                          stockQty
-                        )
-                      )
-                    }
-                    className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded-xl font-semibold"
-                  >
-                    + 增加库存
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      handleStockChange(
-                        -Number(
-                          stockQty
-                        )
-                      )
-                    }
-                    className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-xl font-semibold"
-                  >
-                    - 减少库存
-                  </button>
-
-                </div>
+                <button
+                  onClick={
+                    handleDeleteProduct
+                  }
+                  className="px-5 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-semibold text-white"
+                >
+                  删除商品
+                </button>
 
               </div>
-            )}
-
-            {/* 删除商品 */}
-            <div className="mt-6">
-
-              <button
-                onClick={
-                  handleDeleteProduct
-                }
-                className="px-5 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-semibold text-white"
-              >
-                删除商品
-              </button>
 
             </div>
-
-          </div>
-        )}
+          )}
 
         {/* 默认空白状态 */}
         {panel === 'list' && (
