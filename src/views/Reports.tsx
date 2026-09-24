@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TrendingUp, DollarSign, ShoppingBag, Calendar, CreditCard, Banknote, QrCode, RefreshCw, Filter, Download, Printer, X } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { getTodayOrders, getAllOrders, CATEGORY_LABELS, deleteOrder  } from '@/lib/db';
 import type { Order, PaymentMethod, ProductCategory } from '@/types';
 
@@ -55,6 +56,109 @@ function exportCSV(orders: Order[]) {
     }
   }
 
+  function exportExcel(orders: Order[]) {
+  const rows: (string | number)[][] = [];
+
+  rows.push([
+    '销售日期',
+    '商品名称/型号',
+    '商品类型',
+    'IMEI串号/条码',
+    '数量',
+    '进货价(RM)',
+    '实际售价(RM)',
+    '净利润(RM)',
+    '付款方式',
+  ]);
+
+  for (const order of orders) {
+    for (const item of order.items) {
+      const d = new Date(order.createdAt);
+
+      const datePart =
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ` +
+        `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+      const name = `${item.brand} ${item.model}`;
+      const catLabel = CATEGORY_LABELS[item.category];
+      const imeiOrBarcode = item.imei || '—';
+
+      const cost = item.costPrice * item.quantity;
+      const revenue = item.sellingPrice * item.quantity;
+      const netProfit =
+        (item.sellingPrice - item.costPrice) * item.quantity;
+
+      const pay = PAY_NAMES[order.paymentMethod];
+
+      rows.push([
+        datePart,
+        name,
+        catLabel,
+        imeiOrBarcode,
+        item.quantity,
+        Number(cost.toFixed(2)),
+        Number(revenue.toFixed(2)),
+        Number(netProfit.toFixed(2)),
+        pay,
+      ]);
+    }
+  }
+
+  const totalRevenue = orders.reduce(
+    (s, o) => s + o.totalAmount,
+    0
+  );
+
+  const totalProfit = orders.reduce(
+    (s, o) => s + o.totalProfit,
+    0
+  );
+
+  rows.push([]);
+  rows.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    `总营业额: RM ${totalRevenue.toFixed(2)}`,
+    `总净利润: RM ${totalProfit.toFixed(2)}`,
+    '',
+  ]);
+
+  const worksheet = XLSX.utils.aoa_to_sheet(rows);
+
+  worksheet['!cols'] = [
+    { wch: 20 },
+    { wch: 25 },
+    { wch: 12 },
+    { wch: 20 },
+    { wch: 10 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 15 },
+  ];
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    '销售报表'
+  );
+
+  const todayFile = new Date()
+    .toISOString()
+    .slice(0, 10);
+
+  XLSX.writeFile(
+    workbook,
+    `手机店销售报表_${todayFile}.xlsx`
+  );
+}
+  
   const totalRevenue = orders.reduce((s, o) => s + o.totalAmount, 0);
   const totalProfit = orders.reduce((s, o) => s + o.totalProfit, 0);
   rows.push('');
@@ -130,12 +234,12 @@ export default function Reports() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => exportCSV(orders)}
+            onClick={() => exportExcel(orders)}
             disabled={loading || orders.length === 0}
             className="flex items-center gap-2 px-5 py-2.5 bg-green-500 hover:bg-green-400 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-500/20"
           >
             <Download size={16} />
-            导出 Excel / CSV 报表
+            导出 Excel 
           </button>
           <button
             onClick={load}
