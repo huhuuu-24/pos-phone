@@ -37,6 +37,7 @@ function dateStr(iso: string) {
 type Tab = 'today' | 'date' | 'month' | 'all';
 
 function exportCSV(orders: Order[]) {
+  alert('导出按钮已点击');
   const headers = ['销售日期', '商品名称/型号', '商品类型', 'IMEI串号/条码', '数量', '进货价(RM)', '实际售价(RM)', '净利润(RM)', '付款方式'];
   const rows: string[] = [headers.join(',')];
 
