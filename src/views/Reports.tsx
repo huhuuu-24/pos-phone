@@ -159,24 +159,6 @@ function exportCSV(orders: Order[]) {
     `手机店销售报表_${todayFile}.xlsx`
   );
 }
-  
-  const totalRevenue = orders.reduce((s, o) => s + o.totalAmount, 0);
-  const totalProfit = orders.reduce((s, o) => s + o.totalProfit, 0);
-  rows.push('');
-  rows.push(`"","","","","","","总营业额: RM ${totalRevenue.toFixed(2)}","总净利润: RM ${totalProfit.toFixed(2)}",""`);
-
-  const csvContent = '\uFEFF' + rows.join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  const todayFile = new Date().toISOString().slice(0, 10);
-  link.href = url;
-  link.download = `手机店销售报表_${todayFile}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
 
 function sameDay(iso: string, dateStr: string) {
   return new Date(iso).toISOString().slice(0, 10) === dateStr;
@@ -235,7 +217,7 @@ export default function Reports() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => alert('按钮正常')}
+            onClick={() => exportExcel(orders)}
             disabled={loading || orders.length === 0}
             className="flex items-center gap-2 px-5 py-2.5 bg-green-500 hover:bg-green-400 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-500/20"
           >
